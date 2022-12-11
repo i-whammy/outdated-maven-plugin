@@ -9,7 +9,7 @@ class MainTest {
     }
 
     @Test
-    fun `与えられたミリ秒のタイムスタンプをLocalDateTimeに変換する`() {
+    fun `与えられたエポックミリ秒のタイムスタンプをLocalDateTimeに変換する`() {
         assertEquals(LocalDateTime.of(2022,1,25,7,6,17), toLocalDateTime(1643061977000))
     }
 
