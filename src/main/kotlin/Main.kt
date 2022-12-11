@@ -44,7 +44,7 @@ fun buildRequestUrl(groupId: GroupId, artifactId: ArtifactId): RequestUrl {
 }
 
 fun toLocalDateTime(epochMilli: Long): LocalDateTime =
-    LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMilli), TimeZone.getDefault().toZoneId())
+    LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMilli), ZoneId.of("Z"))
 
 fun toFormattedDate(localDateTime: LocalDateTime): String = localDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE)
 
