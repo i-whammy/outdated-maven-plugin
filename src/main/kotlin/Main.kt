@@ -30,7 +30,7 @@ fun main(args: Array<String>) {
     if (outdatedArtifacts.isNotEmpty()) {
         println("")
         println("------------------------------------------------------------------------------------------------")
-        println("These artifacts are not updated more than a year. Consider adopting alternatives.")
+        println("These artifacts have not been updated more than a year. Consider adopting alternatives.")
         println("------------------------------------------------------------------------------------------------")
         println("")
         outdatedArtifacts.forEach { artifact ->
