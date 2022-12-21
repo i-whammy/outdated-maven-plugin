@@ -1,6 +1,8 @@
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
+import functions.toFormattedDate
+import functions.toLocalDateTime
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
@@ -55,3 +57,7 @@ data class ArtifactResponse(
     @JsonProperty("timestamp") val timestamp: Long,
     @JsonProperty("latestVersion") val latestVersion: String
 )
+
+typealias GroupId = String
+typealias ArtifactId = String
+typealias RequestUrl = String
