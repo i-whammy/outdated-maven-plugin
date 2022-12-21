@@ -1,3 +1,6 @@
+import functions.toFormattedDate
+import functions.toLocalDateTime
+
 interface OutdatedDependencyPrintPort {
     fun print(outdatedDependencies: List<OutdatedDependency>)
 }
