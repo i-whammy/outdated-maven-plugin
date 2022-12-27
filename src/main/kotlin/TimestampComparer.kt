@@ -6,6 +6,7 @@ class TimestampComparer(private val thresholdYear: Long) {
     fun isOutDated(epochMilliSeconds: Long): Boolean {
         val zoneId = ZoneId.of("Z")
         return LocalDateTime.ofInstant(Instant.now(), zoneId).minusYears(thresholdYear) >= LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(epochMilliSeconds), zoneId)
+            Instant.ofEpochMilli(epochMilliSeconds), zoneId
+        )
     }
 }
