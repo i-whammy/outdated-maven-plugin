@@ -1,8 +1,8 @@
-class MavenOutdatedExecutor {
-
-    private val artifactPort: ArtifactPort = PomArtifactRepository()
-    private val outdatedDependencyPort: OutdatedDependencyPort = OutputDependencyRepository()
-    private val outdatedDependencyPrintPort: OutdatedDependencyPrintPort = OutputDependencyPrintDriver()
+class MavenOutdatedExecutor(
+    private val artifactPort: ArtifactPort,
+    private val outdatedDependencyPort: OutdatedDependencyPort,
+    private val outdatedDependencyPrintPort: OutdatedDependencyPrintPort
+) {
 
     fun execute() {
         val dependencies = artifactPort.fetchArtifacts()

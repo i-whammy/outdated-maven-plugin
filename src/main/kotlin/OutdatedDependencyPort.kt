@@ -10,7 +10,7 @@ interface OutdatedDependencyPort {
     fun filterOutdatedDependencies(dependencies: List<Artifact>): List<OutdatedDependency>
 }
 
-class OutputDependencyRepository: OutdatedDependencyPort {
+class OutdatedDependencyRepository: OutdatedDependencyPort {
     private val client = OkHttpClient()
 
     private val mapper = ObjectMapper()
@@ -20,11 +20,13 @@ class OutputDependencyRepository: OutdatedDependencyPort {
         val timestampComparer = TimestampComparer(1)
         val outdatedDependencies = mutableListOf<OutdatedDependency>()
         requests.map { request ->
-            client.newCall(request).execute().use {
-                val responseBody = mapper.readValue(it.body!!.byteStream(), ResponseBody::class.java)
-                val artifact = responseBody.response.artifactResponses[0]
-                if (timestampComparer.isOutDated(artifact.timestamp)) outdatedDependencies.add(artifact.toOutdatedDependency())
-                println("${artifact.id} - The Last Release Date: ${artifact.timestamp.let(::toLocalDateTime).let(::toFormattedDate)}")
+            client.newCall(request).execute().use { response ->
+                response.body!!.byteStream().use { stream ->
+                    val responseBody = mapper.readValue(stream, ResponseBody::class.java)
+                    val artifact = responseBody.response.artifactResponses[0]
+                    if (timestampComparer.isOutDated(artifact.timestamp)) outdatedDependencies.add(artifact.toOutdatedDependency())
+                    println("${artifact.id} - The Last Release Date: ${artifact.timestamp.let(::toLocalDateTime).let(::toFormattedDate)}")
+                }
             }
         }
         return outdatedDependencies
@@ -51,8 +53,8 @@ data class Response(@JsonProperty("docs") val artifactResponses: List<ArtifactRe
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ArtifactResponse(
-    @JsonProperty("groupId") val groupId: String,
-    @JsonProperty("artifactId") val artifactId: String,
+    @JsonProperty("g") val groupId: String,
+    @JsonProperty("a") val artifactId: String,
     @JsonProperty("id") val id: String,
     @JsonProperty("timestamp") val timestamp: Long,
     @JsonProperty("latestVersion") val latestVersion: String

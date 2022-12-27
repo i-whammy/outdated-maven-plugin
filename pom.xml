@@ -55,6 +55,11 @@
       <version>1.13.3</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.kodein.di</groupId>
+      <artifactId>kodein-di-jvm</artifactId>
+      <version>7.16.0</version>
+    </dependency>
   </dependencies>
 
   <build>

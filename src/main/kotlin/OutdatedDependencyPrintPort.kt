@@ -5,7 +5,7 @@ interface OutdatedDependencyPrintPort {
     fun print(outdatedDependencies: List<OutdatedDependency>)
 }
 
-class OutputDependencyPrintDriver: OutdatedDependencyPrintPort {
+class OutdatedDependencyPrintDriver: OutdatedDependencyPrintPort {
     override fun print(outdatedDependencies: List<OutdatedDependency>) {
         println("")
         println("------------------------------------------------------------------------------------------------")
