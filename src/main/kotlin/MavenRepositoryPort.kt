@@ -1,44 +1,38 @@
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
-import functions.toFormattedDate
-import functions.toLocalDateTime
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-interface OutdatedDependencyPort {
-    fun filterOutdatedDependencies(dependencies: List<Artifact>): List<OutdatedDependency>
+interface MavenRepositoryPort {
+    fun fetchLatestArtifacts(artifacts: List<Artifact>): List<LatestArtifact>
 }
 
-class OutdatedDependencyRepository: OutdatedDependencyPort {
+class MavenCentralDriver: MavenRepositoryPort {
     private val client = OkHttpClient()
 
     private val mapper = ObjectMapper()
 
-    override fun filterOutdatedDependencies(dependencies: List<Artifact>): List<OutdatedDependency> {
-        val requests = dependencies.map { buildRequestUrl(it.groupId, it.artifactId) }.map { Request.Builder().url(it).build() }
-        val timestampComparer = TimestampComparer(1)
-        val outdatedDependencies = mutableListOf<OutdatedDependency>()
-        requests.map { request ->
+    override fun fetchLatestArtifacts(artifacts: List<Artifact>): List<LatestArtifact> {
+
+        val requests = artifacts.map { buildRequestUrl(it.groupId, it.artifactId) }.map { Request.Builder().url(it).build() }
+        val latestArtifacts = requests.map { request ->
             client.newCall(request).execute().use { response ->
                 response.body!!.byteStream().use { stream ->
                     val responseBody = mapper.readValue(stream, ResponseBody::class.java)
-                    val artifact = responseBody.response.artifactResponses[0]
-                    if (timestampComparer.isOutDated(artifact.timestamp)) outdatedDependencies.add(artifact.toOutdatedDependency())
-                    println("${artifact.id} - The Last Release Date: ${artifact.timestamp.let(::toLocalDateTime).let(::toFormattedDate)}")
+                    val latestArtifact = responseBody.response.artifactResponses[0].toLatestArtifact()
+                    println("${latestArtifact.id()} - ${latestArtifact.lastReleasedLocalDateTime()}")
+                    latestArtifact
                 }
             }
         }
-        return outdatedDependencies
+        return latestArtifacts
     }
+
 }
 
-fun ArtifactResponse.toOutdatedDependency(): OutdatedDependency {
-    return OutdatedDependency(this.groupId, this.artifactId, this.timestamp)
-}
-
-data class OutdatedDependency(val groupId: GroupId, val artifactId: ArtifactId, val lastReleaseTimestamp: Long) {
-    fun id() = "$groupId:$artifactId"
+fun ArtifactResponse.toLatestArtifact(): LatestArtifact {
+    return LatestArtifact(this.groupId, this.artifactId, this.timestamp)
 }
 
 fun buildRequestUrl(groupId: GroupId, artifactId: ArtifactId): RequestUrl {

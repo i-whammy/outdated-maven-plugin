@@ -1,5 +1,5 @@
 fun main(args: Array<String>) {
     val provider = DependencyProvider()
     val executor by provider.mavenOutdatedExecutor()
-    executor.execute()
+    executor.execute(1)
 }

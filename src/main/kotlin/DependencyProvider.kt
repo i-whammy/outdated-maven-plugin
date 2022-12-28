@@ -4,8 +4,8 @@ class DependencyProvider {
 
     private val dependency = DI {
         bind<ArtifactPort> { singleton { PomArtifactRepository() }}
-        bind<OutdatedDependencyPort> { singleton { OutdatedDependencyRepository() }}
-        bind<OutdatedDependencyPrintPort> { singleton { OutdatedDependencyPrintDriver() }}
+        bind<MavenRepositoryPort> { singleton { MavenCentralDriver() }}
+        bind<OutdatedArtifactOutputPort> { singleton { OutdatedArtifactPrintDriver() }}
     }
 
     fun mavenOutdatedExecutor() = dependency.newInstance { MavenOutdatedExecutor(instance(), instance(), instance()) }

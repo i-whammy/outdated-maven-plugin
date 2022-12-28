@@ -7,7 +7,7 @@ interface ArtifactPort {
 
 class PomArtifactRepository: ArtifactPort {
     override fun fetchArtifacts(): List<Artifact> {
-        return MavenXpp3Reader().read(File("/path/to/file").inputStream()).dependencies.map { Artifact(it.groupId, it.artifactId) }
+        return MavenXpp3Reader().read(File("path/to/pom.xml").inputStream()).dependencies.map { Artifact(it.groupId, it.artifactId) }
     }
 }
 

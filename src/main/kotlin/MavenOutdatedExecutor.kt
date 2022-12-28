@@ -1,14 +1,14 @@
 class MavenOutdatedExecutor(
     private val artifactPort: ArtifactPort,
-    private val outdatedDependencyPort: OutdatedDependencyPort,
-    private val outdatedDependencyPrintPort: OutdatedDependencyPrintPort
+    private val mavenRepositoryPort: MavenRepositoryPort,
+    private val outdatedArtifactOutputPort: OutdatedArtifactOutputPort
 ) {
 
-    fun execute() {
-        val dependencies = artifactPort.fetchArtifacts()
-        val outdatedDependencies = outdatedDependencyPort.filterOutdatedDependencies(dependencies)
-        if (outdatedDependencies.isNotEmpty()) {
-            outdatedDependencyPrintPort.print(outdatedDependencies)
-        }
+    fun execute(thresholdYear: Long) {
+        artifactPort.fetchArtifacts()
+            .let { mavenRepositoryPort.fetchLatestArtifacts(it) }
+            .filter { it.isOutdated(thresholdYear) }
+            .takeIf { it.isNotEmpty() }
+            ?.let { outdatedArtifactOutputPort.print(it) }
     }
 }

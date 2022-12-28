@@ -1,9 +1,9 @@
 import io.mockk.every
 import io.mockk.mockkStatic
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import kotlin.test.assertTrue
 
 class TimestampComparerTest {
 
