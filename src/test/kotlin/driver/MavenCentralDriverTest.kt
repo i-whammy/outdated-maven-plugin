@@ -3,6 +3,7 @@ package driver
 import domain.LatestArtifact
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class MavenCentralDriverTest {
 
@@ -24,4 +25,10 @@ class MavenCentralDriverTest {
             LatestArtifact("groupId", "artifactId", 1672824139L),
             ResponseBody(Response(listOf(ArtifactResponse("groupId", "artifactId", "id", 1672824139L, "1.0.0-SNAPSHOT")))).latestArtifact())
     }
+
+    @Test
+    fun `ResponseBodyにArtifactの情報が入っていない場合例外を投げる`() {
+        assertThrows<ArtifactNotFoundException> { ResponseBody(Response(emptyList())).latestArtifact() }
+    }
+
 }
