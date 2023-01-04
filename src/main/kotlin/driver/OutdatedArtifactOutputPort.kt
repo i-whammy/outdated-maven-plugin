@@ -1,9 +1,7 @@
-import functions.toISOLocalFormattedDate
-import functions.toLocalDateTime
+package driver
 
-interface OutdatedArtifactOutputPort {
-    fun print(outdatedArtifacts: List<LatestArtifact>)
-}
+import domain.LatestArtifact
+import usecase.OutdatedArtifactOutputPort
 
 class OutdatedArtifactPrintDriver: OutdatedArtifactOutputPort {
     override fun print(outdatedArtifacts: List<LatestArtifact>) {

@@ -1,12 +1,15 @@
+package driver
+
+import domain.LatestArtifact
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
+import domain.Artifact
+import domain.ArtifactId
+import domain.GroupId
 import okhttp3.OkHttpClient
 import okhttp3.Request
-
-interface MavenRepositoryPort {
-    fun fetchLatestArtifacts(artifacts: List<Artifact>): List<LatestArtifact>
-}
+import usecase.MavenRepositoryPort
 
 class MavenCentralDriver: MavenRepositoryPort {
     private val client = OkHttpClient()
@@ -23,12 +26,15 @@ class MavenCentralDriver: MavenRepositoryPort {
                 }.latestArtifact()
             }
         }
-        // println("${latestArtifact.id()} - ${latestArtifact.lastReleasedLocalDateTime()}")
     }
 
 }
 
-fun ResponseBody.latestArtifact(): LatestArtifact = this.response.artifactResponses[0].toLatestArtifact()
+fun ResponseBody.latestArtifact(): LatestArtifact {
+    val latestArtifact = this.response.artifactResponses[0].toLatestArtifact()
+    println("${latestArtifact.id()} - ${latestArtifact.lastReleasedLocalDateTime()}")
+    return latestArtifact
+}
 
 fun ArtifactResponse.toLatestArtifact(): LatestArtifact {
     return LatestArtifact(this.groupId, this.artifactId, this.timestamp)

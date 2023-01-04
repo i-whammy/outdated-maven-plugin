@@ -1,14 +1,12 @@
-import org.apache.maven.model.Dependency
+package driver
+
+import domain.Artifact
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader
+import usecase.ArtifactPort
 import java.io.File
 import java.io.FileNotFoundException
-import java.io.InputStream
 
-interface ArtifactPort {
-    fun fetchArtifacts(): List<Artifact>
-}
-
-class PomArtifactRepository: ArtifactPort {
+class PomArtifactDriver: ArtifactPort {
 
     private val mavenReader = MavenXpp3Reader()
 
@@ -22,5 +20,3 @@ class PomArtifactRepository: ArtifactPort {
         }
     }
 }
-
-data class Artifact(val groupId: GroupId, val artifactId: ArtifactId)

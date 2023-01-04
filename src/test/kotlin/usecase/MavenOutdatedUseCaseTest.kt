@@ -1,14 +1,18 @@
+package usecase
+
+import domain.Artifact
+import domain.LatestArtifact
 import io.mockk.*
 import org.junit.jupiter.api.Test
 
-class MavenOutdatedExecutorTest {
+class MavenOutdatedUseCaseTest {
 
     @Test
     fun `依存情報を取得し、更新がされていないアーティファクトが存在すれば出力する`() {
         val artifactPort = mockk<ArtifactPort>()
         val mavenRepositoryPort = mockk<MavenRepositoryPort>()
         val outdatedArtifactOutputPort = mockk<OutdatedArtifactOutputPort>()
-        val executor = MavenOutdatedExecutor(artifactPort, mavenRepositoryPort, outdatedArtifactOutputPort)
+        val executor = MavenOutdatedUseCase(artifactPort, mavenRepositoryPort, outdatedArtifactOutputPort)
         val artifact1 = mockk<Artifact>()
         val artifact2 = mockk<Artifact>()
         val latestArtifact1 = mockk<LatestArtifact>()
@@ -40,7 +44,7 @@ class MavenOutdatedExecutorTest {
         val artifactPort = mockk<ArtifactPort>()
         val mavenRepositoryPort = mockk<MavenRepositoryPort>()
         val outdatedArtifactOutputPort = mockk<OutdatedArtifactOutputPort>()
-        val executor = MavenOutdatedExecutor(artifactPort, mavenRepositoryPort, outdatedArtifactOutputPort)
+        val executor = MavenOutdatedUseCase(artifactPort, mavenRepositoryPort, outdatedArtifactOutputPort)
         val artifact1 = mockk<Artifact>()
         val artifact2 = mockk<Artifact>()
         val latestArtifact1 = mockk<LatestArtifact>()

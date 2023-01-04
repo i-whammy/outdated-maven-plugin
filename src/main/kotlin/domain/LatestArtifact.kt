@@ -1,3 +1,5 @@
+package domain
+
 import functions.toISOLocalFormattedDate
 import functions.toLocalDateTime
 import java.time.Instant

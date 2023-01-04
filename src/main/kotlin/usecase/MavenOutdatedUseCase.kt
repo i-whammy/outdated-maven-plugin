@@ -1,4 +1,6 @@
-class MavenOutdatedExecutor(
+package usecase
+
+class MavenOutdatedUseCase(
     private val artifactPort: ArtifactPort,
     private val mavenRepositoryPort: MavenRepositoryPort,
     private val outdatedArtifactOutputPort: OutdatedArtifactOutputPort

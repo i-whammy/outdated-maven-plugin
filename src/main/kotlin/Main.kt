@@ -2,10 +2,10 @@ import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
     val provider = DependencyProvider()
-    val executor by provider.mavenOutdatedExecutor()
+    val useCase by provider.mavenOutdatedUseCase()
     try {
         val thresholdYear = 1L
-        executor.execute(thresholdYear)
+        useCase.execute(thresholdYear)
     } catch (e: Exception) {
         println(e.message)
         exitProcess(1)
