@@ -16,20 +16,19 @@ class MavenCentralDriver: MavenRepositoryPort {
     override fun fetchLatestArtifacts(artifacts: List<Artifact>): List<LatestArtifact> {
 
         val requests = artifacts.map { buildRequestUrl(it.groupId, it.artifactId) }.map { Request.Builder().url(it).build() }
-        val latestArtifacts = requests.map { request ->
+        return requests.map { request ->
             client.newCall(request).execute().use { response ->
                 response.body!!.byteStream().use { stream ->
-                    val responseBody = mapper.readValue(stream, ResponseBody::class.java)
-                    val latestArtifact = responseBody.response.artifactResponses[0].toLatestArtifact()
-                    println("${latestArtifact.id()} - ${latestArtifact.lastReleasedLocalDateTime()}")
-                    latestArtifact
-                }
+                    mapper.readValue(stream, ResponseBody::class.java)
+                }.latestArtifact()
             }
         }
-        return latestArtifacts
+        // println("${latestArtifact.id()} - ${latestArtifact.lastReleasedLocalDateTime()}")
     }
 
 }
+
+fun ResponseBody.latestArtifact(): LatestArtifact = this.response.artifactResponses[0].toLatestArtifact()
 
 fun ArtifactResponse.toLatestArtifact(): LatestArtifact {
     return LatestArtifact(this.groupId, this.artifactId, this.timestamp)
@@ -54,6 +53,4 @@ data class ArtifactResponse(
     @JsonProperty("latestVersion") val latestVersion: String
 )
 
-typealias GroupId = String
-typealias ArtifactId = String
 typealias RequestUrl = String
