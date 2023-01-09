@@ -19,7 +19,7 @@ class LatestRemoteArtifactTest {
             ZoneId.of("Z")
         )
         val latestArtifact = LatestRemoteArtifact(
-            RemoteRepository("central", "https://example.com", "/"),
+            RemoteRepository("central", "https://example.com"),
             Artifact("groupId", "artifactId"),
             ZonedDateTime.of(LocalDateTime.of(2021, 1, 1, 0, 0, 0), ZoneId.of("Z"))
         )
@@ -34,7 +34,7 @@ class LatestRemoteArtifactTest {
             ZoneId.of("Z")
         )
         val latestArtifact = LatestRemoteArtifact(
-            RemoteRepository("central", "https://example.com", "/"),
+            RemoteRepository("central", "https://example.com"),
             Artifact("groupId", "artifactId"),
             ZonedDateTime.of(LocalDateTime.of(2022, 1, 1, 0, 0, 1), ZoneId.of("Z"))
         )

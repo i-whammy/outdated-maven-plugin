@@ -3,7 +3,6 @@ package usecase
 import domain.*
 import io.mockk.*
 import org.junit.jupiter.api.Test
-import java.time.ZonedDateTime
 
 class MavenOutdatedUseCaseTest {
 
@@ -16,7 +15,7 @@ class MavenOutdatedUseCaseTest {
         val artifact1 = Artifact("org.apache.maven", "maven-core")
         val artifact2 = Artifact("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
         val artifacts = listOf(artifact1, artifact2)
-        val remoteRepository = RemoteRepository("central", "https://repo1.maven.org/maven2", "/")
+        val remoteRepository = RemoteRepository("central", "https://repo1.maven.org/maven2")
         val remoteRepositories = listOf(remoteRepository)
         val remoteArtifactCandidates = listOf(
             RemoteArtifactCandidate(remoteRepository, artifact1),
@@ -57,7 +56,7 @@ class MavenOutdatedUseCaseTest {
         val artifact1 = Artifact("org.apache.maven", "maven-core")
         val artifact2 = Artifact("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
         val artifacts = listOf(artifact1, artifact2)
-        val remoteRepository = RemoteRepository("central", "https://repo1.maven.org/maven2", "/")
+        val remoteRepository = RemoteRepository("central", "https://repo1.maven.org/maven2")
         val remoteRepositories = listOf(remoteRepository)
         val remoteArtifactCandidates = listOf(
             RemoteArtifactCandidate(remoteRepository, artifact1),

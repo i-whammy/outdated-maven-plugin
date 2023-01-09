@@ -12,7 +12,7 @@ class MavenOutdatedMojo: AbstractMojo() {
     private lateinit var project: MavenProject
     override fun execute() {
         val artifacts = project.dependencies.map { Artifact(it.groupId, it.artifactId) }
-        val remoteRepositories = project.remoteArtifactRepositories.map { RemoteRepository(it.id, it.url, it.basedir) }
+        val remoteRepositories = project.remoteArtifactRepositories.map { RemoteRepository(it.id, it.url) }
         val thresholdYear = 1L
         val useCase by DependencyProvider().mavenOutdatedUseCase()
         useCase.verifyArtifacts(artifacts, remoteRepositories, thresholdYear)

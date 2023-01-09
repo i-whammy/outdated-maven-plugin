@@ -10,7 +10,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 data class Artifact(val groupId: GroupId, val artifactId: ArtifactId)
 
-data class RemoteRepository(val id: String, val url: String, val baseDir: String)
+data class RemoteRepository(val id: String, val url: String)
 
 data class RemoteArtifactCandidate(val remoteRepository: RemoteRepository, val artifactCandidate: Artifact)
 
@@ -26,8 +26,7 @@ typealias MavenMetadataPath = String
 fun takeOutLastUpdated(): (i: InputStream) -> ZonedDateTime {
     return {
         val documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(it)
-        val versioning = documentBuilder.documentElement
-            .getElementsByTagName("versioning").item(0) as Element
+        val versioning = documentBuilder.documentElement.getElementsByTagName("versioning").item(0) as Element
         val lastUpdatedValue = versioning.getElementsByTagName("lastUpdated").item(0).textContent
         ZonedDateTime.of(LocalDateTime.parse(lastUpdatedValue, DateTimeFormatter.ofPattern("yyyyMMddHHmmss")), ZoneId.of("Z"))
     }
