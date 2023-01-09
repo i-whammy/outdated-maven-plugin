@@ -1,19 +1,18 @@
-import driver.MavenCentralDriver
-import driver.OutdatedArtifactPrintDriver
-import driver.PomArtifactDriver
+import driver.MavenRemoteRepositoryDriver
+import driver.OutdatedArtifactOutputDriver
+import okhttp3.OkHttpClient
 import org.kodein.di.*
-import usecase.ArtifactPort
 import usecase.MavenOutdatedUseCase
-import usecase.MavenRepositoryPort
+import usecase.MavenRemoteRepositoryPort
 import usecase.OutdatedArtifactOutputPort
 
 class DependencyProvider {
 
     private val dependency = DI {
-        bind<ArtifactPort> { singleton { PomArtifactDriver() }}
-        bind<MavenRepositoryPort> { singleton { MavenCentralDriver() }}
-        bind<OutdatedArtifactOutputPort> { singleton { OutdatedArtifactPrintDriver() }}
+        val client = OkHttpClient()
+        bind<MavenRemoteRepositoryPort> { singleton { MavenRemoteRepositoryDriver(client) }}
+        bind<OutdatedArtifactOutputPort> { singleton { OutdatedArtifactOutputDriver() }}
     }
 
-    fun mavenOutdatedUseCase() = dependency.newInstance { MavenOutdatedUseCase(instance(), instance(), instance()) }
+    fun mavenOutdatedUseCase() = dependency.newInstance { MavenOutdatedUseCase(instance(), instance()) }
 }

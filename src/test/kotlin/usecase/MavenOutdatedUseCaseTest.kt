@@ -1,74 +1,89 @@
 package usecase
 
-import domain.Artifact
-import domain.LatestArtifact
+import domain.*
 import io.mockk.*
 import org.junit.jupiter.api.Test
+import java.time.ZonedDateTime
 
 class MavenOutdatedUseCaseTest {
 
     @Test
     fun `依存情報を取得し、更新がされていないアーティファクトが存在すれば出力する`() {
-        val artifactPort = mockk<ArtifactPort>()
-        val mavenRepositoryPort = mockk<MavenRepositoryPort>()
+        val mavenRemoteRepositoryPort = mockk<MavenRemoteRepositoryPort>()
         val outdatedArtifactOutputPort = mockk<OutdatedArtifactOutputPort>()
-        val executor = MavenOutdatedUseCase(artifactPort, mavenRepositoryPort, outdatedArtifactOutputPort)
-        val artifact1 = mockk<Artifact>()
-        val artifact2 = mockk<Artifact>()
-        val latestArtifact1 = mockk<LatestArtifact>()
-        val latestArtifact2 = mockk<LatestArtifact>()
+        val useCase = MavenOutdatedUseCase(mavenRemoteRepositoryPort, outdatedArtifactOutputPort)
+
+        val artifact1 = Artifact("org.apache.maven", "maven-core")
+        val artifact2 = Artifact("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
         val artifacts = listOf(artifact1, artifact2)
-        val latestArtifacts = listOf(latestArtifact1, latestArtifact2)
-        val outdatedArtifacts = listOf(latestArtifact1)
+        val remoteRepository = RemoteRepository("central", "https://repo1.maven.org/maven2", "/")
+        val remoteRepositories = listOf(remoteRepository)
+        val remoteArtifactCandidates = listOf(
+            RemoteArtifactCandidate(remoteRepository, artifact1),
+            RemoteArtifactCandidate(remoteRepository, artifact2),
+        )
+        val latestRemoteArtifact1 = mockk<LatestRemoteArtifact>()
+        val latestRemoteArtifact2 = mockk<LatestRemoteArtifact>()
+        val latestRemoteArtifacts = listOf(
+            latestRemoteArtifact1,
+            latestRemoteArtifact2
+        )
+        val outdatedArtifacts = listOf(
+            latestRemoteArtifact1
+        )
 
         val thresholdYear = 1L
 
-        every { artifactPort.fetchArtifacts() } returns artifacts
-        every { mavenRepositoryPort.fetchLatestArtifacts(artifacts) } returns latestArtifacts
-        every { latestArtifact1.isOutdated(thresholdYear) } returns true
-        every { latestArtifact2.isOutdated(thresholdYear) } returns false
-        every { outdatedArtifactOutputPort.print(outdatedArtifacts) } just Runs
+        every { mavenRemoteRepositoryPort.fetchLatestRemoteArtifacts(remoteArtifactCandidates, takeOutLastUpdated()) } returns latestRemoteArtifacts
+        every { latestRemoteArtifact1.isOutdated(thresholdYear) } returns true
+        every { latestRemoteArtifact2.isOutdated(thresholdYear) } returns false
+        every { outdatedArtifactOutputPort.output(outdatedArtifacts) } just Runs
 
-        executor.execute(thresholdYear)
+        useCase.verifyArtifacts(artifacts, remoteRepositories, thresholdYear)
 
         verify {
-            artifactPort.fetchArtifacts()
-            mavenRepositoryPort.fetchLatestArtifacts(artifacts)
-            outdatedArtifactOutputPort.print(outdatedArtifacts)
+            mavenRemoteRepositoryPort.fetchLatestRemoteArtifacts(remoteArtifactCandidates, takeOutLastUpdated())
+            outdatedArtifactOutputPort.output(outdatedArtifacts)
         }
     }
 
     @Test
     fun `依存情報を取得し、更新がされていないアーティファクトが存在しなければ何もしない`() {
 
-        val artifactPort = mockk<ArtifactPort>()
-        val mavenRepositoryPort = mockk<MavenRepositoryPort>()
+        val mavenRemoteRepositoryPort = mockk<MavenRemoteRepositoryPort>()
         val outdatedArtifactOutputPort = mockk<OutdatedArtifactOutputPort>()
-        val executor = MavenOutdatedUseCase(artifactPort, mavenRepositoryPort, outdatedArtifactOutputPort)
-        val artifact1 = mockk<Artifact>()
-        val artifact2 = mockk<Artifact>()
-        val latestArtifact1 = mockk<LatestArtifact>()
-        val latestArtifact2 = mockk<LatestArtifact>()
+        val useCase = MavenOutdatedUseCase(mavenRemoteRepositoryPort, outdatedArtifactOutputPort)
+
+        val artifact1 = Artifact("org.apache.maven", "maven-core")
+        val artifact2 = Artifact("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
         val artifacts = listOf(artifact1, artifact2)
-        val latestArtifacts = listOf(latestArtifact1, latestArtifact2)
-        val outdatedArtifacts = listOf(latestArtifact1)
+        val remoteRepository = RemoteRepository("central", "https://repo1.maven.org/maven2", "/")
+        val remoteRepositories = listOf(remoteRepository)
+        val remoteArtifactCandidates = listOf(
+            RemoteArtifactCandidate(remoteRepository, artifact1),
+            RemoteArtifactCandidate(remoteRepository, artifact2),
+        )
+        val latestRemoteArtifact1 = mockk<LatestRemoteArtifact>()
+        val latestRemoteArtifact2 = mockk<LatestRemoteArtifact>()
+        val latestRemoteArtifacts = listOf(
+            latestRemoteArtifact1,
+            latestRemoteArtifact2
+        )
+        val outdatedArtifacts = emptyList<LatestRemoteArtifact>()
 
         val thresholdYear = 1L
 
-        every { artifactPort.fetchArtifacts() } returns artifacts
-        every { mavenRepositoryPort.fetchLatestArtifacts(artifacts) } returns latestArtifacts
-        every { latestArtifact1.isOutdated(thresholdYear) } returns false
-        every { latestArtifact2.isOutdated(thresholdYear) } returns false
-        every { outdatedArtifactOutputPort.print(outdatedArtifacts) } just Runs
+        every { mavenRemoteRepositoryPort.fetchLatestRemoteArtifacts(remoteArtifactCandidates, takeOutLastUpdated()) } returns latestRemoteArtifacts
+        every { latestRemoteArtifact1.isOutdated(thresholdYear) } returns false
+        every { latestRemoteArtifact2.isOutdated(thresholdYear) } returns false
 
-        executor.execute(thresholdYear)
+        useCase.verifyArtifacts(artifacts, remoteRepositories, thresholdYear)
 
         verify {
-            artifactPort.fetchArtifacts()
-            mavenRepositoryPort.fetchLatestArtifacts(artifacts)
+            mavenRemoteRepositoryPort.fetchLatestRemoteArtifacts(remoteArtifactCandidates, takeOutLastUpdated())
         }
         verify(exactly = 0) {
-            outdatedArtifactOutputPort.print(outdatedArtifacts)
+            outdatedArtifactOutputPort.output(outdatedArtifacts)
         }
     }
 }

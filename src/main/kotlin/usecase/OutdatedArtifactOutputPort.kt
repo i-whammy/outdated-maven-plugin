@@ -1,7 +1,7 @@
 package usecase
 
-import domain.LatestArtifact
+import domain.LatestRemoteArtifact
 
 interface OutdatedArtifactOutputPort {
-    fun print(outdatedArtifacts: List<LatestArtifact>)
+    fun output(outdatedArtifacts: List<LatestRemoteArtifact>)
 }
