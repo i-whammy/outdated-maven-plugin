@@ -23,3 +23,7 @@ class MavenRemoteRepositoryDriver(private val client: OkHttpClient) : MavenRemot
         return client.newCall(request).execute()
     }
 }
+
+fun RemoteArtifactCandidate.toMetadataPathCandidate(): MavenMetadataPath {
+    return "${remoteRepository.url}${remoteRepository.baseDir}${artifactCandidate.groupId.replace(".", "/")}/${artifactCandidate.artifactId.replace(".", "/")}/maven-metadata.xml"
+}

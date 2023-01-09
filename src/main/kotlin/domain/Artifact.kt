@@ -12,11 +12,7 @@ data class Artifact(val groupId: GroupId, val artifactId: ArtifactId)
 
 data class RemoteRepository(val id: String, val url: String, val baseDir: String)
 
-data class RemoteArtifactCandidate(val remoteRepository: RemoteRepository, val artifactCandidate: Artifact) {
-    fun toMetadataPathCandidate(): MavenMetadataPath {
-        return "${remoteRepository.url}${remoteRepository.baseDir}${artifactCandidate.groupId.replace(".", "/")}/${artifactCandidate.artifactId.replace(".", "/")}/maven-metadata.xml"
-    }
-}
+data class RemoteArtifactCandidate(val remoteRepository: RemoteRepository, val artifactCandidate: Artifact)
 
 data class LatestRemoteArtifact(val remoteRepository: RemoteRepository, val artifact: Artifact, val lastUpdated: ZonedDateTime) {
     fun isOutdated(thresholdYear: Long): Boolean {
