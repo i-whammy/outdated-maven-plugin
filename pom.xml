@@ -84,12 +84,6 @@
             <version>1.4.5</version>
             <scope>test</scope>
         </dependency>
-        <!-- Following is testing for outdated dependency -->
-        <dependency>
-            <groupId>com.natpryce</groupId>
-            <artifactId>konfig</artifactId>
-            <version>1.6.10.0</version>
-        </dependency>
     </dependencies>
 
     <build>

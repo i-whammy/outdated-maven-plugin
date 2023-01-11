@@ -8,11 +8,18 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import javax.xml.parsers.DocumentBuilderFactory
 
-data class Artifact(val groupId: GroupId, val artifactId: ArtifactId)
+data class Artifact(val groupId: GroupId, val artifactId: ArtifactId) {
+    fun toId(): String = "$groupId:$artifactId"
+}
 
 data class RemoteRepository(val id: String, val url: String)
 
-data class RemoteArtifactCandidate(val remoteRepository: RemoteRepository, val artifactCandidate: Artifact)
+data class RemoteArtifactCandidate(val artifact: Artifact, val remoteRepositoryCandidates: List<RemoteRepository>)
+
+sealed class LatestRemoteArtifactResult
+data class Found(val latestRemoteArtifact: LatestRemoteArtifact): LatestRemoteArtifactResult()
+data class NotFound(val remoteArtifactCandidate: RemoteArtifactCandidate): LatestRemoteArtifactResult()
+
 
 data class LatestRemoteArtifact(val remoteRepository: RemoteRepository, val artifact: Artifact, val lastUpdated: ZonedDateTime) {
     fun isOutdated(thresholdYear: Long): Boolean {

@@ -4,7 +4,9 @@ import domain.*
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
+import io.mockk.verify
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.InputStream
@@ -13,86 +15,63 @@ import java.time.ZonedDateTime
 class MavenRemoteRepositoryDriverTest {
 
     @Test
-    fun `リモートサーバー上にあるアーティファクト候補を受け取って、サーバー上のアーティファクトとして返す`() {
+    fun `リモートサーバー上にあるアーティファクト候補を受け取って、有効なレスポンスの場合のみサーバー上のアーティファクトとして返す`() {
         val client = mockk<OkHttpClient>()
         val mavenRemoteRepositoryDriver = spyk(MavenRemoteRepositoryDriver(client))
 
-        val remoteRepository = RemoteRepository("central", "https://example.com/")
-        val artifactCandidate = Artifact("groupId", "artifactId")
+        val remoteRepository1 = RemoteRepository("not-found-repository", "https://example.com/1")
+        val remoteRepository2 = RemoteRepository("central", "https://example.com/2")
+        val remoteRepository3 = RemoteRepository("not-found-repository", "https://example.com/3")
+        val artifact = Artifact("groupId", "artifactId")
         val inputStream = mockk<InputStream>()
-        val response = mockk<okhttp3.Response>()
+        val response1 = mockk<Response>()
+        val response2 = mockk<Response>()
         val lastUpdated = mockk<ZonedDateTime>()
         val takeOutLastUpdated = { _: InputStream -> lastUpdated }
-        val remoteArtifactCandidates = listOf(
-                RemoteArtifactCandidate(
-                    remoteRepository,
-                    artifactCandidate
-                )
-        )
-        every { mavenRemoteRepositoryDriver.executeGet("https://example.com/groupId/artifactId/maven-metadata.xml") } returns response
-        every { response.isSuccessful } returns true
-        every { response.body!!.byteStream() } returns inputStream
+        val remoteArtifactCandidate = RemoteArtifactCandidate(artifact, listOf(remoteRepository1, remoteRepository2, remoteRepository3))
+        every { mavenRemoteRepositoryDriver.executeGet("https://example.com/1/groupId/artifactId/maven-metadata.xml") } returns response1
+        every { mavenRemoteRepositoryDriver.executeGet("https://example.com/2/groupId/artifactId/maven-metadata.xml") } returns response2
+        every { response1.isSuccessful } returns false
+        every { response2.isSuccessful } returns true
+        every { response2.body!!.byteStream() } returns inputStream
         assertEquals(
-            listOf(LatestRemoteArtifact(remoteRepository, artifactCandidate, lastUpdated)),
-            mavenRemoteRepositoryDriver.fetchLatestRemoteArtifacts(remoteArtifactCandidates, takeOutLastUpdated)
+            Found(LatestRemoteArtifact(remoteRepository2, artifact, lastUpdated)),
+            mavenRemoteRepositoryDriver.fetchLatestRemoteArtifact(remoteArtifactCandidate, takeOutLastUpdated)
         )
     }
 
     @Test
-    fun `生成されたパスが無効なものだった場合、そのアーティファクトの取得はスキップする`() {
+    fun `渡された候補の中にリモートリポジトリ上で存在するものがない場合、見つからなかったということを伝える`() {
         val client = mockk<OkHttpClient>()
         val mavenRemoteRepositoryDriver = spyk(MavenRemoteRepositoryDriver(client))
 
-        val remoteRepository = RemoteRepository("central", "https://example.com/")
+        val remoteRepository = RemoteRepository("central", "https://example.com")
         val artifactCandidate = Artifact("groupId", "artifactId")
-        val noExistingArtifactCandidate = Artifact("groupId", "NOT_FOUND")
-        val inputStream = mockk<InputStream>()
-        val response = mockk<okhttp3.Response>()
-        val notFoundResponse = mockk<okhttp3.Response>()
+        val response = mockk<Response>()
         val lastUpdated = mockk<ZonedDateTime>()
         val takeOutLastUpdated = { _: InputStream -> lastUpdated }
-        val remoteArtifactCandidates = listOf(
-            RemoteArtifactCandidate(
-                remoteRepository,
-                artifactCandidate
-            ),
-            RemoteArtifactCandidate(
-                remoteRepository,
-                noExistingArtifactCandidate
-            ),
-        )
+        val remoteArtifactCandidate = RemoteArtifactCandidate(artifactCandidate, listOf(remoteRepository))
         every { mavenRemoteRepositoryDriver.executeGet("https://example.com/groupId/artifactId/maven-metadata.xml") } returns response
-        every { mavenRemoteRepositoryDriver.executeGet("https://example.com/groupId/NOT_FOUND/maven-metadata.xml") } returns notFoundResponse
-        every { response.isSuccessful } returns true
-        every { notFoundResponse.isSuccessful } returns false
-        every { response.body!!.byteStream() } returns inputStream
+        every { response.isSuccessful } returns false
         assertEquals(
-            listOf(LatestRemoteArtifact(remoteRepository, artifactCandidate, lastUpdated)),
-            mavenRemoteRepositoryDriver.fetchLatestRemoteArtifacts(remoteArtifactCandidates, takeOutLastUpdated)
+            NotFound(remoteArtifactCandidate),
+            mavenRemoteRepositoryDriver.fetchLatestRemoteArtifact(remoteArtifactCandidate, takeOutLastUpdated)
         )
     }
 
     @Test
     fun `リポジトリとアーティファクトの情報からmetadataのファイルパスを生成する`() {
-        val candidate = RemoteArtifactCandidate(
-            RemoteRepository("central", "https://repo1.maven.org/maven2/"),
-            Artifact("groupId", "artifactId")
-        )
         assertEquals(
             "https://repo1.maven.org/maven2/groupId/artifactId/maven-metadata.xml",
-            candidate.toMetadataPathCandidate()
+            Artifact("groupId", "artifactId").toMetadataPathCandidate(RemoteRepository("central", "https://repo1.maven.org/maven2"))
         )
     }
 
     @Test
     fun `アーティファクトのgroupId, artifactIdがドットつなぎの場合スラッシュに置換する`() {
-        val candidate = RemoteArtifactCandidate(
-            RemoteRepository("central", "https://repo1.maven.org/maven2/"),
-            Artifact("org.jetbrains.kotlin", "kotlin.stdlib.jdk8")
-        )
         assertEquals(
             "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin/stdlib/jdk8/maven-metadata.xml",
-            candidate.toMetadataPathCandidate()
+            Artifact("org.jetbrains.kotlin", "kotlin.stdlib.jdk8").toMetadataPathCandidate(RemoteRepository("central", "https://repo1.maven.org/maven2"))
         )
     }
 }

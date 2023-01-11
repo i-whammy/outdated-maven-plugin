@@ -3,50 +3,47 @@ package driver
 import domain.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import org.slf4j.LoggerFactory
 import usecase.MavenRemoteRepositoryPort
 import java.io.InputStream
-import java.lang.Exception
 import java.time.ZonedDateTime
 
 class MavenRemoteRepositoryDriver(private val client: OkHttpClient) : MavenRemoteRepositoryPort {
 
     private val logger = LoggerFactory.getLogger(MavenRemoteRepositoryDriver::class.java)
 
-    override fun fetchLatestRemoteArtifacts(
-        remoteArtifactCandidates: List<RemoteArtifactCandidate>,
-        takeOutLastUpdatedFn: (i: InputStream) -> ZonedDateTime
-    ): List<LatestRemoteArtifact> {
-        val latestRemoteArtifacts = mutableListOf<LatestRemoteArtifact>()
-        remoteArtifactCandidates.map { candidate ->
-            val pathCandidate = candidate.toMetadataPathCandidate()
-            val response = executeGet(pathCandidate)
+    override fun fetchLatestRemoteArtifact(
+        remoteArtifactCandidate: RemoteArtifactCandidate,
+        takeOutLastUpdated: (i: InputStream) -> ZonedDateTime
+    ): LatestRemoteArtifactResult {
+        val artifact = remoteArtifactCandidate.artifact
+        remoteArtifactCandidate.remoteRepositoryCandidates.map { remoteRepositoryCandidate ->
+            val url = artifact.toMetadataPathCandidate(remoteRepositoryCandidate)
+            val response = executeGet(url)
             if (response.isSuccessful) {
-                logger.info("Fetching metadata from ${candidate.toMetadataPathCandidate()}")
-                latestRemoteArtifacts.add(
-                    LatestRemoteArtifact(
-                        candidate.remoteRepository, candidate.artifactCandidate,
-                        takeOutLastUpdatedFn(response.body!!.byteStream())
-                    )
-                )
-            } else {
-                logger.info("Metadata not found. ${candidate.toMetadataPathCandidate()}")
+                logger.info("Fetching metadata from $url")
+                return Found(LatestRemoteArtifact(remoteRepositoryCandidate, artifact, takeOutLastUpdated(response.body!!.byteStream())))
+            }
+            else {
+                logger.info("not found $url")
             }
         }
-        return latestRemoteArtifacts
+        return NotFound(remoteArtifactCandidate)
     }
 
-    fun executeGet(url: String): okhttp3.Response {
+    fun executeGet(url: String): Response {
         val request = Request.Builder().url(url).build()
         return client.newCall(request).execute()
     }
 }
 
-fun RemoteArtifactCandidate.toMetadataPathCandidate(): MavenMetadataPath {
-    return "${remoteRepository.url}${
-        artifactCandidate.groupId.replace(
+fun Artifact.toMetadataPathCandidate(remoteRepository: RemoteRepository): MavenMetadataPath {
+    return "${remoteRepository.url}/${
+        this.groupId.replace(
             ".",
             "/"
         )
-    }/${artifactCandidate.artifactId.replace(".", "/")}/maven-metadata.xml"
+    }/${this.artifactId.replace(".", "/")}/maven-metadata.xml"
 }
+
