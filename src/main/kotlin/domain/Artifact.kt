@@ -12,7 +12,11 @@ data class Artifact(val groupId: GroupId, val artifactId: ArtifactId) {
     fun toId(): String = "$groupId:$artifactId"
 }
 
-data class RemoteRepository(val id: String, val url: String)
+data class RemoteRepository(val id: String, val url: String) {
+    fun normalizedUrl(): String {
+        return if (url.endsWith("/")) url else "$url/"
+    }
+}
 
 data class RemoteArtifactCandidate(val artifact: Artifact, val remoteRepositoryCandidates: List<RemoteRepository>)
 

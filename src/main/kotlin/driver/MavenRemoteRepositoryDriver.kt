@@ -39,11 +39,11 @@ class MavenRemoteRepositoryDriver(private val client: OkHttpClient) : MavenRemot
 }
 
 fun Artifact.toMetadataPathCandidate(remoteRepository: RemoteRepository): MavenMetadataPath {
-    return "${remoteRepository.url}/${
+    return "${remoteRepository.normalizedUrl()}${
         this.groupId.replace(
             ".",
             "/"
         )
-    }/${this.artifactId.replace(".", "/")}/maven-metadata.xml"
+    }/${this.artifactId}/maven-metadata.xml"
 }
 

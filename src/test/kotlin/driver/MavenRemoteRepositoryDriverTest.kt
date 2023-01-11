@@ -68,10 +68,19 @@ class MavenRemoteRepositoryDriverTest {
     }
 
     @Test
-    fun `アーティファクトのgroupId, artifactIdがドットつなぎの場合スラッシュに置換する`() {
+    fun `アーティファクトのgroupIdがドットつなぎの場合スラッシュに置換する`() {
         assertEquals(
-            "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin/stdlib/jdk8/maven-metadata.xml",
+            "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/maven-metadata.xml",
+            Artifact("org.jetbrains.kotlin", "kotlin-stdlib-jdk8").toMetadataPathCandidate(RemoteRepository("central", "https://repo1.maven.org/maven2"))
+        )
+    }
+
+    @Test
+    fun `アーティファクトのartifactIdはドットつなぎでもスラッシュに置換せずそのまま利用する`() {
+        assertEquals(
+            "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin.stdlib.jdk8/maven-metadata.xml",
             Artifact("org.jetbrains.kotlin", "kotlin.stdlib.jdk8").toMetadataPathCandidate(RemoteRepository("central", "https://repo1.maven.org/maven2"))
         )
     }
+
 }
