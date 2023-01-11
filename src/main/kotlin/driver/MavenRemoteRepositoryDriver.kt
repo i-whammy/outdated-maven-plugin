@@ -26,7 +26,7 @@ class MavenRemoteRepositoryDriver(private val client: OkHttpClient) : MavenRemot
                 return Found(LatestRemoteArtifact(remoteRepositoryCandidate, artifact, takeOutLastUpdated(response.body!!.byteStream())))
             }
             else {
-                logger.info("not found $url")
+                logger.info("Not found $url")
             }
         }
         return NotFound(remoteArtifactCandidate)

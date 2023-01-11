@@ -16,9 +16,11 @@ class OutdatedArtifactOutputDriver : OutdatedArtifactOutputPort {
         logger.info("")
         outdatedArtifacts.forEach { artifact ->
             logger.info(
-                "${artifact.artifact.groupId}:${artifact.artifact.artifactId} - The Last Release Date: ${
+                "${artifact.artifact.toId()} - The Last Release Date: ${
                     artifact.lastUpdated.format(
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        DateTimeFormatter.ofPattern(
+                            "yyyy-MM-dd"
+                        )
                     )
                 }"
             )
