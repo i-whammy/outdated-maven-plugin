@@ -21,12 +21,16 @@ class MavenRemoteRepositoryDriver(private val client: OkHttpClient) : MavenRemot
         repos.map { repo ->
             val url = MavenMetadataPath.of(repo, artifact)
             val response = executeGet(url)
-            if (response.isSuccessful) {
-                logger.info("Fetching metadata from $url")
-                return Found(LatestRemoteArtifact(repo, artifact, takeOutLastUpdated(response.body!!.byteStream())))
-            }
-            else {
-                logger.info("Not found $url")
+            response.use {
+                if (response.isSuccessful) {
+                    logger.info("Fetching metadata from $url")
+                    response.body!!.use {
+                        return Found(LatestRemoteArtifact(repo, artifact, takeOutLastUpdated(it.byteStream())))
+                    }
+                }
+                else {
+                    logger.info("Not found $url")
+                }
             }
         }
         return NotFound(artifact)

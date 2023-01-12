@@ -1,10 +1,7 @@
 package driver
 
 import domain.*
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.spyk
-import io.mockk.verify
+import io.mockk.*
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -34,6 +31,9 @@ class MavenRemoteRepositoryDriverTest {
         every { response1.isSuccessful } returns false
         every { response2.isSuccessful } returns true
         every { response2.body!!.byteStream() } returns inputStream
+        every { response2.body!!.close() } just Runs
+        every { response1.close() } just Runs
+        every { response2.close() } just Runs
         assertEquals(
             Found(LatestRemoteArtifact(remoteRepository2, artifact, lastUpdated)),
             mavenRemoteRepositoryDriver.fetchLatestRemoteArtifact(remoteArtifactCandidate, takeOutLastUpdated)
@@ -53,6 +53,7 @@ class MavenRemoteRepositoryDriverTest {
         val remoteArtifactCandidate = RemoteArtifactCandidate(artifactCandidate, listOf(remoteRepository))
         every { mavenRemoteRepositoryDriver.executeGet("https://example.com/groupId/artifactId/maven-metadata.xml") } returns response
         every { response.isSuccessful } returns false
+        every { response.close() } just Runs
         assertEquals(
             NotFound(artifactCandidate),
             mavenRemoteRepositoryDriver.fetchLatestRemoteArtifact(remoteArtifactCandidate, takeOutLastUpdated)
