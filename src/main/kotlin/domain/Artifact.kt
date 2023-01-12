@@ -8,7 +8,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import javax.xml.parsers.DocumentBuilderFactory
 
-data class Artifact(val groupId: GroupId, val artifactId: ArtifactId) {
+data class Artifact(val groupId: String, val artifactId: String) {
     fun toId(): String = "$groupId:$artifactId"
 }
 
@@ -22,7 +22,7 @@ data class RemoteArtifactCandidate(val artifact: Artifact, val remoteRepositoryC
 
 sealed class LatestRemoteArtifactResult
 data class Found(val latestRemoteArtifact: LatestRemoteArtifact): LatestRemoteArtifactResult()
-data class NotFound(val remoteArtifactCandidate: RemoteArtifactCandidate): LatestRemoteArtifactResult()
+data class NotFound(val notFoundArtifact: Artifact): LatestRemoteArtifactResult()
 
 
 data class LatestRemoteArtifact(val remoteRepository: RemoteRepository, val artifact: Artifact, val lastUpdated: ZonedDateTime) {
@@ -30,9 +30,19 @@ data class LatestRemoteArtifact(val remoteRepository: RemoteRepository, val arti
         val now = ZonedDateTime.now(ZoneId.of("Z"))
         return lastUpdated.isBefore(now.minusYears(thresholdYear))
     }
+
+    fun toLoggingMessage(): String {
+        return "${artifact.toId()} - The Last Release Date: ${lastUpdated.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))}"
+    }
 }
 
-typealias MavenMetadataPath = String
+class MavenMetadataPath {
+    companion object {
+        fun of(remoteRepository: RemoteRepository, artifact: Artifact): String {
+            return "${remoteRepository.normalizedUrl()}${artifact.groupId.replace(".", "/")}/${artifact.artifactId}/maven-metadata.xml"
+        }
+    }
+}
 
 fun takeOutLastUpdated(): (i: InputStream) -> ZonedDateTime {
     return {

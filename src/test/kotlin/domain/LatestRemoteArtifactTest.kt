@@ -2,12 +2,12 @@ package domain
 
 import io.mockk.every
 import io.mockk.mockkStatic
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 class LatestRemoteArtifactTest {
 
@@ -41,4 +41,14 @@ class LatestRemoteArtifactTest {
         assertFalse { latestArtifact.isOutdated(1L) }
     }
 
+    @Test
+    fun `ロギング用の文字列を返す`() {
+        assertEquals(
+            "groupId:artifactId - The Last Release Date: 2020-01-01",
+            LatestRemoteArtifact(
+                RemoteRepository("central", "https://example.net"),
+                Artifact("groupId", "artifactId"),
+                ZonedDateTime.of(LocalDateTime.of(2020,1,1,0,0,0), ZoneId.of("Z"))
+            ).toLoggingMessage())
+    }
 }

@@ -17,19 +17,19 @@ class MavenRemoteRepositoryDriver(private val client: OkHttpClient) : MavenRemot
         remoteArtifactCandidate: RemoteArtifactCandidate,
         takeOutLastUpdated: (i: InputStream) -> ZonedDateTime
     ): LatestRemoteArtifactResult {
-        val artifact = remoteArtifactCandidate.artifact
-        remoteArtifactCandidate.remoteRepositoryCandidates.map { remoteRepositoryCandidate ->
-            val url = artifact.toMetadataPathCandidate(remoteRepositoryCandidate)
+        val (artifact, repos) = remoteArtifactCandidate
+        repos.map { repo ->
+            val url = MavenMetadataPath.of(repo, artifact)
             val response = executeGet(url)
             if (response.isSuccessful) {
                 logger.info("Fetching metadata from $url")
-                return Found(LatestRemoteArtifact(remoteRepositoryCandidate, artifact, takeOutLastUpdated(response.body!!.byteStream())))
+                return Found(LatestRemoteArtifact(repo, artifact, takeOutLastUpdated(response.body!!.byteStream())))
             }
             else {
                 logger.info("Not found $url")
             }
         }
-        return NotFound(remoteArtifactCandidate)
+        return NotFound(artifact)
     }
 
     fun executeGet(url: String): Response {
@@ -37,13 +37,3 @@ class MavenRemoteRepositoryDriver(private val client: OkHttpClient) : MavenRemot
         return client.newCall(request).execute()
     }
 }
-
-fun Artifact.toMetadataPathCandidate(remoteRepository: RemoteRepository): MavenMetadataPath {
-    return "${remoteRepository.normalizedUrl()}${
-        this.groupId.replace(
-            ".",
-            "/"
-        )
-    }/${this.artifactId}/maven-metadata.xml"
-}
-

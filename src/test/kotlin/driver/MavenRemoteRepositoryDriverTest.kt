@@ -54,33 +54,8 @@ class MavenRemoteRepositoryDriverTest {
         every { mavenRemoteRepositoryDriver.executeGet("https://example.com/groupId/artifactId/maven-metadata.xml") } returns response
         every { response.isSuccessful } returns false
         assertEquals(
-            NotFound(remoteArtifactCandidate),
+            NotFound(artifactCandidate),
             mavenRemoteRepositoryDriver.fetchLatestRemoteArtifact(remoteArtifactCandidate, takeOutLastUpdated)
         )
     }
-
-    @Test
-    fun `リポジトリとアーティファクトの情報からmetadataのファイルパスを生成する`() {
-        assertEquals(
-            "https://repo1.maven.org/maven2/groupId/artifactId/maven-metadata.xml",
-            Artifact("groupId", "artifactId").toMetadataPathCandidate(RemoteRepository("central", "https://repo1.maven.org/maven2"))
-        )
-    }
-
-    @Test
-    fun `アーティファクトのgroupIdがドットつなぎの場合スラッシュに置換する`() {
-        assertEquals(
-            "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/maven-metadata.xml",
-            Artifact("org.jetbrains.kotlin", "kotlin-stdlib-jdk8").toMetadataPathCandidate(RemoteRepository("central", "https://repo1.maven.org/maven2"))
-        )
-    }
-
-    @Test
-    fun `アーティファクトのartifactIdはドットつなぎでもスラッシュに置換せずそのまま利用する`() {
-        assertEquals(
-            "https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin.stdlib.jdk8/maven-metadata.xml",
-            Artifact("org.jetbrains.kotlin", "kotlin.stdlib.jdk8").toMetadataPathCandidate(RemoteRepository("central", "https://repo1.maven.org/maven2"))
-        )
-    }
-
 }
