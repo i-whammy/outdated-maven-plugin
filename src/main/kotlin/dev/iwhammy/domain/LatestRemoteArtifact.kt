@@ -1,4 +1,4 @@
-package domain
+package dev.iwhammy.domain
 
 import java.time.ZoneId
 import java.time.ZonedDateTime

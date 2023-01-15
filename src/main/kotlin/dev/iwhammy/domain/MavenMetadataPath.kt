@@ -1,4 +1,4 @@
-package domain
+package dev.iwhammy.domain
 
 class MavenMetadataPath {
     companion object {

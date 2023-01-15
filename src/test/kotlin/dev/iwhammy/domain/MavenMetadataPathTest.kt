@@ -1,5 +1,8 @@
-package domain
+package dev.iwhammy.domain
 
+import dev.iwhammy.domain.Artifact
+import dev.iwhammy.domain.MavenMetadataPath
+import dev.iwhammy.domain.RemoteRepository
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 

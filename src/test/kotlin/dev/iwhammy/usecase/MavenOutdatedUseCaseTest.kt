@@ -1,6 +1,10 @@
-package usecase
+package dev.iwhammy.usecase
 
-import domain.*
+import dev.iwhammy.domain.*
+import dev.iwhammy.usecase.LatestArtifactOutputPort
+import dev.iwhammy.usecase.MavenOutdatedUseCase
+import dev.iwhammy.usecase.MavenRemoteRepositoryPort
+import dev.iwhammy.usecase.OutdatedArtifactOutputPort
 import io.mockk.*
 import org.junit.jupiter.api.Test
 

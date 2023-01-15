@@ -1,6 +1,7 @@
-package driver
+package dev.iwhammy.driver
 
-import domain.*
+import dev.iwhammy.domain.*
+import dev.iwhammy.driver.MavenRemoteRepositoryDriver
 import io.mockk.*
 import okhttp3.OkHttpClient
 import okhttp3.Response

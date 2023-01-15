@@ -1,6 +1,7 @@
-package usecase
+package dev.iwhammy.usecase
 
-import domain.*
+import dev.iwhammy.domain.LatestRemoteArtifactResult
+import dev.iwhammy.domain.RemoteArtifactCandidate
 import java.io.InputStream
 import java.time.ZonedDateTime
 

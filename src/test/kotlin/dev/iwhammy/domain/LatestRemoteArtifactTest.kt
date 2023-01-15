@@ -1,5 +1,8 @@
-package domain
+package dev.iwhammy.domain
 
+import dev.iwhammy.domain.Artifact
+import dev.iwhammy.domain.LatestRemoteArtifact
+import dev.iwhammy.domain.RemoteRepository
 import io.mockk.every
 import io.mockk.mockkStatic
 import org.junit.jupiter.api.Assertions.*
@@ -7,7 +10,6 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 
 class LatestRemoteArtifactTest {
 

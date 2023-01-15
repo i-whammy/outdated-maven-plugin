@@ -1,6 +1,6 @@
-package usecase
+package dev.iwhammy.usecase
 
-import domain.LatestRemoteArtifact
+import dev.iwhammy.domain.LatestRemoteArtifact
 
 interface LatestArtifactOutputPort {
 

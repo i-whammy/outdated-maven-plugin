@@ -1,6 +1,6 @@
-package usecase
+package dev.iwhammy.usecase
 
-import domain.*
+import dev.iwhammy.domain.*
 import org.slf4j.LoggerFactory
 
 class MavenOutdatedUseCase(

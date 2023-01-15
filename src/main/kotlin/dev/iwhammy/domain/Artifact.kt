@@ -1,4 +1,4 @@
-package domain
+package dev.iwhammy.domain
 
 import org.w3c.dom.Element
 import java.io.InputStream

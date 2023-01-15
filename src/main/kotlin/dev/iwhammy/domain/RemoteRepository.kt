@@ -1,4 +1,4 @@
-package domain
+package dev.iwhammy.domain
 
 data class RemoteRepository(val id: String, val url: String) {
     fun normalizedUrl(): String {

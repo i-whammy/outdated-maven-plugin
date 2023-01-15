@@ -1,11 +1,13 @@
-import domain.Artifact
-import domain.RemoteRepository
+package dev.iwhammy
+
+import dev.iwhammy.domain.Artifact
+import dev.iwhammy.domain.RemoteRepository
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugins.annotations.Mojo
 import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
 
-@Mojo(name = "mvn-outdated")
+@Mojo(name = "outdated")
 class MavenOutdatedMojo: AbstractMojo() {
 
     @Parameter(property = "project")

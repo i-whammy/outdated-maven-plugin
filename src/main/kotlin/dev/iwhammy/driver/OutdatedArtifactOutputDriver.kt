@@ -1,8 +1,8 @@
-package driver
+package dev.iwhammy.driver
 
-import domain.LatestRemoteArtifact
+import dev.iwhammy.domain.LatestRemoteArtifact
 import org.slf4j.LoggerFactory
-import usecase.OutdatedArtifactOutputPort
+import dev.iwhammy.usecase.OutdatedArtifactOutputPort
 
 class OutdatedArtifactOutputDriver : OutdatedArtifactOutputPort {
 

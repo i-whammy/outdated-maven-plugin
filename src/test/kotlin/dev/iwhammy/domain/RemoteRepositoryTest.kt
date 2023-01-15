@@ -1,5 +1,6 @@
-package domain
+package dev.iwhammy.domain
 
+import dev.iwhammy.domain.RemoteRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
