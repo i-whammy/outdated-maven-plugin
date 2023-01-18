@@ -10,7 +10,7 @@ This is maven plugin for checking outdated dependencies.
     <plugin>
         <groupId>dev.i-whammy</groupId>
         <artifactId>outdated-maven-plugin</artifactId>
-        <version>0.0.1</version>
+        <version>0.1.0</version>
     </plugin>
 </plugins>
 
