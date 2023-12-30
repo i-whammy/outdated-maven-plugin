@@ -72,24 +72,24 @@
         <dependency>
             <groupId>io.mockk</groupId>
             <artifactId>mockk-jvm</artifactId>
-            <version>1.13.3</version>
+            <version>1.13.8</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.kodein.di</groupId>
             <artifactId>kodein-di-jvm</artifactId>
-            <version>7.16.0</version>
+            <version>7.21.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
-            <version>3.7.0</version>
+            <version>3.10.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-            <version>3.8.7</version>
+            <version>3.9.6</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
