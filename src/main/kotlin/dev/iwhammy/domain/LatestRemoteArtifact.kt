@@ -9,8 +9,4 @@ data class LatestRemoteArtifact(val remoteRepository: RemoteRepository, val arti
         val now = ZonedDateTime.now(ZoneId.of("Z"))
         return lastUpdated.isBefore(now.minusYears(thresholdYear))
     }
-
-    fun toLoggingMessage(): String {
-        return "${artifact.toId()} - The Last Release Date: ${lastUpdated.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))}"
-    }
 }

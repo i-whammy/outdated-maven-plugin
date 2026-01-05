@@ -10,10 +10,10 @@ import dev.iwhammy.usecase.MavenOutdatedUseCase
 import dev.iwhammy.usecase.port.MavenRemoteRepositoryPort
 import dev.iwhammy.usecase.port.OutdatedArtifactOutputPort
 
-class DependencyProvider {
+object DependencyProvider {
+    private val client = OkHttpClient()
 
     private val dependency = DI {
-        val client = OkHttpClient()
         bind<MavenRemoteRepositoryPort> { singleton { MavenRemoteRepositoryDriver(client) }}
         bind<LatestArtifactOutputPort> { singleton { LatestArtifactOutputDriver() }}
         bind<OutdatedArtifactOutputPort> { singleton { OutdatedArtifactOutputDriver() }}
