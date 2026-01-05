@@ -1,6 +1,9 @@
 package dev.iwhammy.usecase
 
 import dev.iwhammy.domain.*
+import dev.iwhammy.usecase.port.LatestArtifactOutputPort
+import dev.iwhammy.usecase.port.MavenRemoteRepositoryPort
+import dev.iwhammy.usecase.port.OutdatedArtifactOutputPort
 import org.slf4j.LoggerFactory
 
 class MavenOutdatedUseCase(
@@ -19,7 +22,7 @@ class MavenOutdatedUseCase(
         latestRemoteArtifacts
             .filter { it.isOutdated(thresholdYear) }
             .takeIf { it.isNotEmpty() }
-            ?.let { outdatedArtifactOutputPort.output(it) }
+            ?.let { outdatedArtifactOutputPort.output(it, thresholdYear) }
     }
 
     private fun resolveFetchResults(results: List<LatestRemoteArtifactResult>): List<LatestRemoteArtifact> {

@@ -2,7 +2,7 @@ package dev.iwhammy.driver
 
 import dev.iwhammy.domain.LatestRemoteArtifact
 import org.slf4j.LoggerFactory
-import dev.iwhammy.usecase.LatestArtifactOutputPort
+import dev.iwhammy.usecase.port.LatestArtifactOutputPort
 
 class LatestArtifactOutputDriver: LatestArtifactOutputPort {
     private val logger = LoggerFactory.getLogger(LatestArtifactOutputDriver::class.java)

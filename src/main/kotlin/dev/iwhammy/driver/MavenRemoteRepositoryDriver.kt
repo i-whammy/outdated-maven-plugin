@@ -5,7 +5,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.slf4j.LoggerFactory
-import dev.iwhammy.usecase.MavenRemoteRepositoryPort
+import dev.iwhammy.usecase.port.MavenRemoteRepositoryPort
 import java.io.InputStream
 import java.time.ZonedDateTime
 

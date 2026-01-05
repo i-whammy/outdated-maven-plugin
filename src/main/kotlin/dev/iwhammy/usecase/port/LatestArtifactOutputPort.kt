@@ -1,4 +1,4 @@
-package dev.iwhammy.usecase
+package dev.iwhammy.usecase.port
 
 import dev.iwhammy.domain.LatestRemoteArtifact
 

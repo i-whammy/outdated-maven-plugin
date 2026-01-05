@@ -1,10 +1,9 @@
 package dev.iwhammy.usecase
 
 import dev.iwhammy.domain.*
-import dev.iwhammy.usecase.LatestArtifactOutputPort
-import dev.iwhammy.usecase.MavenOutdatedUseCase
-import dev.iwhammy.usecase.MavenRemoteRepositoryPort
-import dev.iwhammy.usecase.OutdatedArtifactOutputPort
+import dev.iwhammy.usecase.port.LatestArtifactOutputPort
+import dev.iwhammy.usecase.port.MavenRemoteRepositoryPort
+import dev.iwhammy.usecase.port.OutdatedArtifactOutputPort
 import io.mockk.*
 import org.junit.jupiter.api.Test
 
@@ -18,7 +17,7 @@ class MavenOutdatedUseCaseTest {
         val useCase = MavenOutdatedUseCase(mavenRemoteRepositoryPort, latestArtifactOutputPort, outdatedArtifactOutputPort)
 
         val artifact1 = Artifact("org.apache.maven", "maven-core")
-        val artifact2 = Artifact("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
+        val artifact2 = Artifact("org.jetbrains.kotlin", "kotlin-stdlib")
         val artifacts = listOf(artifact1, artifact2)
         val remoteRepository = RemoteRepository("central", "https://repo1.maven.org/maven2/")
         val remoteRepositories = listOf(remoteRepository)
@@ -37,15 +36,13 @@ class MavenOutdatedUseCaseTest {
         every { latestArtifactOutputPort.output(listOf(latestRemoteArtifact1, latestRemoteArtifact2)) } just Runs
         every { latestRemoteArtifact1.isOutdated(thresholdYear) } returns true
         every { latestRemoteArtifact2.isOutdated(thresholdYear) } returns false
-        every { outdatedArtifactOutputPort.output(outdatedArtifacts) } just Runs
+        every { outdatedArtifactOutputPort.output(outdatedArtifacts, thresholdYear) } just Runs
 
         useCase.verifyArtifacts(artifacts, remoteRepositories, thresholdYear)
 
         verify {
-            mavenRemoteRepositoryPort.fetchLatestRemoteArtifact(remoteArtifactCandidate1, takeOutLastUpdated())
-            mavenRemoteRepositoryPort.fetchLatestRemoteArtifact(remoteArtifactCandidate2, takeOutLastUpdated())
             latestArtifactOutputPort.output(listOf(latestRemoteArtifact1, latestRemoteArtifact2))
-            outdatedArtifactOutputPort.output(outdatedArtifacts)
+            outdatedArtifactOutputPort.output(outdatedArtifacts, thresholdYear)
         }
     }
 
@@ -57,7 +54,7 @@ class MavenOutdatedUseCaseTest {
         val useCase = MavenOutdatedUseCase(mavenRemoteRepositoryPort, latestArtifactOutputPort, outdatedArtifactOutputPort)
 
         val artifact1 = Artifact("org.apache.maven", "maven-core")
-        val artifact2 = Artifact("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
+        val artifact2 = Artifact("org.jetbrains.kotlin", "kotlin-stdlib")
         val artifacts = listOf(artifact1, artifact2)
         val remoteRepository = RemoteRepository("central", "https://repo1.maven.org/maven2/")
         val remoteRepositories = listOf(remoteRepository)
@@ -74,15 +71,13 @@ class MavenOutdatedUseCaseTest {
         every { mavenRemoteRepositoryPort.fetchLatestRemoteArtifact(remoteArtifactCandidate2, takeOutLastUpdated()) } returns result2
         every { latestArtifactOutputPort.output(listOf(latestRemoteArtifact)) } just Runs
         every { latestRemoteArtifact.isOutdated(thresholdYear) } returns true
-        every { outdatedArtifactOutputPort.output(outdatedArtifacts) } just Runs
+        every { outdatedArtifactOutputPort.output(outdatedArtifacts, thresholdYear) } just Runs
 
         useCase.verifyArtifacts(artifacts, remoteRepositories, thresholdYear)
 
         verify {
-            mavenRemoteRepositoryPort.fetchLatestRemoteArtifact(remoteArtifactCandidate1, takeOutLastUpdated())
-            mavenRemoteRepositoryPort.fetchLatestRemoteArtifact(remoteArtifactCandidate2, takeOutLastUpdated())
             latestArtifactOutputPort.output(listOf(latestRemoteArtifact))
-            outdatedArtifactOutputPort.output(outdatedArtifacts)
+            outdatedArtifactOutputPort.output(outdatedArtifacts, thresholdYear)
         }
     }
 
@@ -112,11 +107,10 @@ class MavenOutdatedUseCaseTest {
         useCase.verifyArtifacts(artifacts, remoteRepositories, thresholdYear)
 
         verify {
-            mavenRemoteRepositoryPort.fetchLatestRemoteArtifact(remoteArtifactCandidate, takeOutLastUpdated())
             latestArtifactOutputPort.output(listOf(latestRemoteArtifact))
         }
         verify(exactly = 0) {
-            outdatedArtifactOutputPort.output(outdatedArtifacts)
+            outdatedArtifactOutputPort.output(outdatedArtifacts, thresholdYear)
         }
     }
 }

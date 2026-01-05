@@ -5,10 +5,10 @@ import dev.iwhammy.driver.MavenRemoteRepositoryDriver
 import dev.iwhammy.driver.OutdatedArtifactOutputDriver
 import okhttp3.OkHttpClient
 import org.kodein.di.*
-import dev.iwhammy.usecase.LatestArtifactOutputPort
+import dev.iwhammy.usecase.port.LatestArtifactOutputPort
 import dev.iwhammy.usecase.MavenOutdatedUseCase
-import dev.iwhammy.usecase.MavenRemoteRepositoryPort
-import dev.iwhammy.usecase.OutdatedArtifactOutputPort
+import dev.iwhammy.usecase.port.MavenRemoteRepositoryPort
+import dev.iwhammy.usecase.port.OutdatedArtifactOutputPort
 
 class DependencyProvider {
 
